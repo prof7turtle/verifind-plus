@@ -1,0 +1,53 @@
+[
+  {
+    "@context": [
+      "https://www.w3.org/ns/did/v1",
+      "https://w3id.org/security/suites/ed25519-2020/v1"
+    ],
+    "id": "did:ethr:0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+    "controller": "did:ethr:0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+    "verificationMethod": [
+      {
+        "id": "did:ethr:0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266#controller",
+        "type": "EcdsaSecp256k1RecoveryMethod2020",
+        "controller": "did:ethr:0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+        "blockchainAccountId": "eip155:31337:0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266"
+      }
+    ],
+    "authentication": [
+      "did:ethr:0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266#controller"
+    ],
+    "assertionMethod": [
+      "did:ethr:0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266#controller"
+    ],
+    "service": [
+      {
+        "id": "did:ethr:0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266#identity-service",
+        "type": "IdentityHub",
+        "serviceEndpoint": "https://identity.bel-india.in/hub/0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266"
+      }
+    ]
+  },
+  {
+    "@context": [
+      "https://www.w3.org/ns/did/v1",
+      "https://w3id.org/security/suites/ed25519-2020/v1"
+    ],
+    "id": "did:key:z6MkhaXgBZDvotDkL5257faiztiGiC2QtKLGpbnnEGta2doK",
+    "controller": "did:key:z6MkhaXgBZDvotDkL5257faiztiGiC2QtKLGpbnnEGta2doK",
+    "verificationMethod": [
+      {
+        "id": "did:key:z6MkhaXgBZDvotDkL5257faiztiGiC2QtKLGpbnnEGta2doK#z6MkhaXgBZDvotDkL5257faiztiGiC2QtKLGpbnnEGta2doK",
+        "type": "Ed25519VerificationKey2020",
+        "controller": "did:key:z6MkhaXgBZDvotDkL5257faiztiGiC2QtKLGpbnnEGta2doK",
+        "publicKeyMultibase": "z6MkhaXgBZDvotDkL5257faiztiGiC2QtKLGpbnnEGta2doK"
+      }
+    ],
+    "authentication": [
+      "did:key:z6MkhaXgBZDvotDkL5257faiztiGiC2QtKLGpbnnEGta2doK#z6MkhaXgBZDvotDkL5257faiztiGiC2QtKLGpbnnEGta2doK"
+    ],
+    "assertionMethod": [
+      "did:key:z6MkhaXgBZDvotDkL5257faiztiGiC2QtKLGpbnnEGta2doK#z6MkhaXgBZDvotDkL5257faiztiGiC2QtKLGpbnnEGta2doK"
+    ]
+  }
+]

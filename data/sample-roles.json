@@ -1,0 +1,51 @@
+[
+  {
+    "role": "ADMIN",
+    "roleIdentifier": "0x0000000000000000000000000000000000000000000000000000000000000000",
+    "name": "System Administrator",
+    "description": "Full platform authority: registers new identities, assigns RBAC roles, revokes access, and deploys contract upgrades.",
+    "permissions": [
+      "identity:register",
+      "identity:revoke",
+      "identity:assign_role",
+      "asset:mint",
+      "asset:transfer",
+      "asset:decommission",
+      "audit:read_all"
+    ]
+  },
+  {
+    "role": "MANAGER",
+    "roleIdentifier": "0x241ecf16d79d0f8dbfb92cbc07fe17840425976cf0667f022fe9047cac950e6f",
+    "name": "Asset & Department Manager",
+    "description": "Authorized to initiate digital asset creation (minting) and manage operational transfers across team members.",
+    "permissions": [
+      "asset:mint",
+      "asset:transfer",
+      "audit:read_all"
+    ]
+  },
+  {
+    "role": "AUDITOR",
+    "roleIdentifier": "0x6da429a32c4a9616af839c59df30cb8547285566cfbb6c90539ec7ee1b5ea3f4",
+    "name": "Independent Auditor / BEL Security",
+    "description": "Read-only access across all transaction logs, identity events, asset movements, and verification proofs.",
+    "permissions": [
+      "audit:read_all",
+      "audit:verify_onchain",
+      "asset:read_all",
+      "identity:read_all"
+    ]
+  },
+  {
+    "role": "USER",
+    "roleIdentifier": "0x2db9a70f202909a0ec3202d81824d773bc51178b913e430f9d4e95453ab4b136",
+    "name": "Registered Participant",
+    "description": "Standard identity authorized to hold, view, and interact with designated digital assets.",
+    "permissions": [
+      "asset:hold",
+      "asset:transfer_owned",
+      "audit:read_self"
+    ]
+  }
+]

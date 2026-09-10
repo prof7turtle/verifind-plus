@@ -1,0 +1,32 @@
+{
+  "name": "sih26125-backend",
+  "version": "0.1.0",
+  "description": "Backend REST API and Blockchain Indexer for SIH 26125 Identity & Asset Platform",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js"
+  },
+  "keywords": [
+    "express",
+    "mongodb",
+    "mongoose",
+    "ethers",
+    "did",
+    "blockchain-indexer",
+    "sih26125"
+  ],
+  "author": "SIH 26125 Team",
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "ethers": "^6.11.1",
+    "express": "^4.19.2",
+    "mongoose": "^8.2.3",
+    "morgan": "^1.10.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0"
+  }
+}
