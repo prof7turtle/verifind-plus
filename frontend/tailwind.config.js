@@ -41,11 +41,6 @@ export default {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
-        brand: {
-          teal: "#14B8A6",
-          cyan: "#0EA5E9",
-          slate: "#0F172A",
-        }
       },
       borderRadius: {
         lg: "var(--radius)",

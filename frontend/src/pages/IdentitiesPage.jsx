@@ -111,14 +111,14 @@ export function IdentitiesPage() {
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800/80 pb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-neutral-200 pb-6">
         <div>
-          <h1 className="text-2xl font-bold text-white tracking-tight flex items-center gap-2">
-            <Users className="h-6 w-6 text-sky-400" />
+          <h1 className="text-2xl font-bold text-neutral-950 tracking-tight flex items-center gap-2">
+            <Users className="h-6 w-6 text-neutral-900" />
             <span>Decentralized Identity Registry</span>
           </h1>
-          <p className="text-sm text-slate-400 mt-1">
-            W3C DID documents and Role-Based Access Control managed on-chain by Bharat Electronics Limited.
+          <p className="text-sm text-neutral-500 mt-1">
+            W3C DID documents and Role-Based Access Control managed directly on-chain.
           </p>
         </div>
 
@@ -128,7 +128,7 @@ export function IdentitiesPage() {
             size="sm"
             onClick={loadIdentities}
             disabled={loading}
-            className="gap-1.5 border-slate-700 bg-slate-900/60 hover:bg-slate-800 text-xs"
+            className="gap-1.5 border-neutral-200 bg-white hover:bg-neutral-50 text-neutral-700 text-xs"
           >
             <RefreshCw className={`h-3.5 w-3.5 ${loading ? "animate-spin" : ""}`} />
             <span>Refresh</span>
@@ -138,7 +138,7 @@ export function IdentitiesPage() {
             <Button
               onClick={() => setIsModalOpen(true)}
               size="sm"
-              className="bg-sky-600 hover:bg-sky-500 text-white gap-1.5 text-xs"
+              className="bg-neutral-900 hover:bg-neutral-800 text-white gap-1.5 text-xs"
             >
               <PlusCircle className="h-3.5 w-3.5" />
               <span>Register New Identity</span>
@@ -150,8 +150,8 @@ export function IdentitiesPage() {
       {/* Filters */}
       <div className="flex items-center justify-between gap-4">
         <div className="flex items-center gap-2">
-          <Filter className="h-4 w-4 text-slate-500" />
-          <span className="text-xs text-slate-400 font-medium">Filter by Role:</span>
+          <Filter className="h-4 w-4 text-neutral-400" />
+          <span className="text-xs text-neutral-500 font-medium">Filter by Role:</span>
           <Select
             value={roleFilter}
             onChange={(e) => {
@@ -168,13 +168,13 @@ export function IdentitiesPage() {
           </Select>
         </div>
 
-        <div className="text-xs text-slate-400 font-mono">
-          Total Records: <span className="text-white font-semibold">{total}</span>
+        <div className="text-xs text-neutral-500 font-mono">
+          Total Records: <span className="text-neutral-950 font-semibold">{total}</span>
         </div>
       </div>
 
       {/* Data Table */}
-      <Card className="border-slate-800 bg-slate-900/50">
+      <Card className="border-neutral-200 bg-white shadow-sm">
         <CardContent className="p-0">
           <Table>
             <TableHeader>
@@ -199,17 +199,17 @@ export function IdentitiesPage() {
                 ))
               ) : identities.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={5} className="text-center py-10 text-slate-500">
+                  <TableCell colSpan={5} className="text-center py-10 text-neutral-400">
                     No registered identities found.
                   </TableCell>
                 </TableRow>
               ) : (
                 identities.map((item) => (
                   <TableRow key={item._id}>
-                    <TableCell className="font-mono text-xs text-sky-400 font-medium">
+                    <TableCell className="font-mono text-xs text-neutral-900 font-medium">
                       {item.address}
                     </TableCell>
-                    <TableCell className="font-mono text-xs text-slate-300">
+                    <TableCell className="font-mono text-xs text-neutral-600">
                       {item.did}
                     </TableCell>
                     <TableCell>
@@ -232,7 +232,7 @@ export function IdentitiesPage() {
                         {item.isActive ? "Active" : "Revoked"}
                       </Badge>
                     </TableCell>
-                    <TableCell className="font-mono text-xs text-slate-400">
+                    <TableCell className="font-mono text-xs text-neutral-500">
                       {formatDate(item.registeredAt)}
                     </TableCell>
                   </TableRow>
@@ -255,7 +255,7 @@ export function IdentitiesPage() {
 
           <div className="space-y-4 py-2">
             <div>
-              <label className="text-xs font-semibold text-slate-300 block mb-1">
+              <label className="text-xs font-semibold text-neutral-700 block mb-1">
                 Ethereum Wallet Address *
               </label>
               <Input
@@ -268,7 +268,7 @@ export function IdentitiesPage() {
             </div>
 
             <div>
-              <label className="text-xs font-semibold text-slate-300 block mb-1">
+              <label className="text-xs font-semibold text-neutral-700 block mb-1">
                 DID Identifier String *
               </label>
               <Input
@@ -278,11 +278,11 @@ export function IdentitiesPage() {
                 className="font-mono text-xs"
                 required
               />
-              <p className="text-[10px] text-slate-500 mt-1">Must conform to W3C Decentralized Identifier scheme.</p>
+              <p className="text-[10px] text-neutral-400 mt-1">Must conform to W3C Decentralized Identifier scheme.</p>
             </div>
 
             <div>
-              <label className="text-xs font-semibold text-slate-300 block mb-1">
+              <label className="text-xs font-semibold text-neutral-700 block mb-1">
                 Initial RBAC Role Assignment *
               </label>
               <Select
@@ -309,7 +309,7 @@ export function IdentitiesPage() {
             <Button
               type="submit"
               disabled={submitting}
-              className="bg-sky-600 hover:bg-sky-500 text-white"
+              className="bg-neutral-900 hover:bg-neutral-800 text-white"
             >
               {submitting ? "Signing & Broadcasting..." : "Sign & Register on Chain"}
             </Button>

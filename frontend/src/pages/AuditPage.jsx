@@ -69,13 +69,13 @@ export function AuditPage() {
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800/80 pb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-neutral-200 pb-6">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <History className="h-6 w-6 text-amber-400" />
-            <h1 className="text-2xl font-bold text-white tracking-tight">Forensic Blockchain Audit Trail</h1>
+            <History className="h-6 w-6 text-neutral-900" />
+            <h1 className="text-2xl font-bold text-neutral-950 tracking-tight">Forensic Blockchain Audit Trail</h1>
           </div>
-          <p className="text-sm text-slate-400">
+          <p className="text-sm text-neutral-500">
             Immutable on-chain event ledger indexed directly from smart contracts. Strictly append-only.
           </p>
         </div>
@@ -86,7 +86,7 @@ export function AuditPage() {
             size="sm"
             onClick={loadLogs}
             disabled={loading}
-            className="gap-1.5 border-slate-700 bg-slate-900/60 hover:bg-slate-800 text-xs"
+            className="gap-1.5 border-neutral-200 bg-white hover:bg-neutral-50 text-neutral-700 text-xs"
           >
             <RefreshCw className={`h-3.5 w-3.5 ${loading ? "animate-spin" : ""}`} />
             <span>Refresh Ledger</span>
@@ -95,20 +95,20 @@ export function AuditPage() {
       </div>
 
       {/* Query & Filter Toolbar */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-slate-900/40 p-4 rounded-lg border border-slate-800">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-neutral-50 p-4 rounded-lg border border-neutral-200">
         <form onSubmit={handleAddressSearchSubmit} className="flex items-center gap-2 flex-1 max-w-md">
           <Input
             placeholder="Search forensic trail by address (0x...)"
             value={addressSearch}
             onChange={(e) => setAddressSearch(e.target.value)}
-            className="font-mono text-xs h-9 bg-slate-950/80"
+            className="font-mono text-xs h-9 bg-white border-neutral-300 text-neutral-900"
           />
-          <Button type="submit" size="sm" className="bg-sky-600 hover:bg-sky-500 text-white text-xs h-9 px-4">
+          <Button type="submit" size="sm" className="bg-neutral-900 hover:bg-neutral-800 text-white text-xs h-9 px-4">
             <Search className="h-3.5 w-3.5 mr-1" />
             Search
           </Button>
           {addressSearch && (
-            <Button type="button" variant="outline" size="sm" onClick={clearAddressSearch} className="text-xs h-9">
+            <Button type="button" variant="outline" size="sm" onClick={clearAddressSearch} className="text-xs h-9 border-neutral-300 bg-white text-neutral-700 hover:bg-neutral-100">
               Clear
             </Button>
           )}
@@ -116,14 +116,14 @@ export function AuditPage() {
 
         <div className="flex flex-wrap items-center gap-3">
           <div className="flex items-center gap-2">
-            <span className="text-xs text-slate-400">Contract:</span>
+            <span className="text-xs text-neutral-500 font-medium">Contract:</span>
             <Select
               value={contractFilter}
               onChange={(e) => {
                 setContractFilter(e.target.value);
                 setPage(1);
               }}
-              className="text-xs h-9 w-36 bg-slate-950/80"
+              className="text-xs h-9 w-36 bg-white border-neutral-300 text-neutral-900"
             >
               <option value="">All Contracts</option>
               <option value="IdentityRegistry">IdentityRegistry</option>
@@ -132,14 +132,14 @@ export function AuditPage() {
           </div>
 
           <div className="flex items-center gap-2">
-            <span className="text-xs text-slate-400">Event:</span>
+            <span className="text-xs text-neutral-500 font-medium">Event:</span>
             <Select
               value={eventTypeFilter}
               onChange={(e) => {
                 setEventTypeFilter(e.target.value);
                 setPage(1);
               }}
-              className="text-xs h-9 w-44 bg-slate-950/80"
+              className="text-xs h-9 w-44 bg-white border-neutral-300 text-neutral-900"
             >
               <option value="">All Event Types</option>
               <option value="IdentityRegistered">IdentityRegistered</option>
@@ -154,7 +154,7 @@ export function AuditPage() {
       </div>
 
       {/* Audit Log Table */}
-      <Card className="border-slate-800 bg-slate-900/50">
+      <Card className="border-neutral-200 bg-white shadow-sm">
         <CardContent className="p-0">
           <Table>
             <TableHeader>
@@ -183,7 +183,7 @@ export function AuditPage() {
                 ))
               ) : logs.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center py-10 text-slate-500">
+                  <TableCell colSpan={7} className="text-center py-10 text-neutral-400">
                     No indexed audit logs found matching criteria.
                   </TableCell>
                 </TableRow>
@@ -210,28 +210,28 @@ export function AuditPage() {
                       </Badge>
                     </TableCell>
 
-                    <TableCell className="font-mono text-xs text-slate-300">
+                    <TableCell className="font-mono text-xs text-neutral-700">
                       {item.contractName}
                     </TableCell>
 
-                    <TableCell className="font-mono text-xs text-sky-400" title={item.transactionHash}>
+                    <TableCell className="font-mono text-xs text-neutral-900 font-medium" title={item.transactionHash}>
                       {truncateAddress(item.transactionHash)}
                     </TableCell>
 
-                    <TableCell className="font-mono text-xs text-slate-400">
-                      <span className="bg-slate-800/80 px-1.5 py-0.5 rounded border border-slate-700/60">
+                    <TableCell className="font-mono text-xs text-neutral-700">
+                      <span className="bg-neutral-100 px-1.5 py-0.5 rounded border border-neutral-200">
                         #{item.blockNumber}
                       </span>
                     </TableCell>
 
-                    <TableCell className="font-mono text-xs text-slate-300 max-w-xs truncate" title={JSON.stringify(item.args)}>
+                    <TableCell className="font-mono text-xs text-neutral-600 max-w-xs truncate" title={JSON.stringify(item.args)}>
                       {Object.entries(item.args || {})
                         .filter(([k]) => !k.startsWith("_") && k !== "timestamp")
                         .map(([k, v]) => `${k}=${typeof v === "string" && v.startsWith("0x") ? truncateAddress(v) : v}`)
                         .join(" • ")}
                     </TableCell>
 
-                    <TableCell className="font-mono text-xs text-slate-400">
+                    <TableCell className="font-mono text-xs text-neutral-500">
                       {formatDate(item.timestamp)}
                     </TableCell>
 
@@ -240,7 +240,7 @@ export function AuditPage() {
                         variant="ghost"
                         size="sm"
                         onClick={() => setInspectLog(item)}
-                        className="h-7 px-2 text-xs text-slate-400 hover:text-white"
+                        className="h-7 px-2 text-xs text-neutral-500 hover:text-neutral-900 hover:bg-neutral-100"
                       >
                         <FileCode2 className="h-3.5 w-3.5" />
                       </Button>
@@ -268,7 +268,7 @@ export function AuditPage() {
             </DialogHeader>
 
             <div className="space-y-3 py-2 text-xs font-mono">
-              <div className="bg-slate-950 p-4 rounded-lg border border-slate-800 text-slate-200 overflow-auto max-h-72">
+              <div className="bg-neutral-50 p-4 rounded-lg border border-neutral-200 text-neutral-900 overflow-auto max-h-72">
                 <pre>{JSON.stringify(inspectLog, null, 2)}</pre>
               </div>
             </div>

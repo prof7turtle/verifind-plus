@@ -9,13 +9,14 @@ import { DashboardPage } from "@/pages/DashboardPage";
 import { IdentitiesPage } from "@/pages/IdentitiesPage";
 import { AssetsPage } from "@/pages/AssetsPage";
 import { AuditPage } from "@/pages/AuditPage";
+import { Footer } from "@/components/Footer";
 
 export default function App() {
   return (
     <ToastProvider>
       <WalletProvider>
         <Router>
-          <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col antialiased selection:bg-sky-500/30 selection:text-sky-200">
+          <div className="min-h-screen bg-white text-neutral-950 flex flex-col antialiased selection:bg-neutral-900 selection:text-white">
             <Navbar />
             <main className="flex-1">
               <Routes>
@@ -48,6 +49,7 @@ export default function App() {
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
             </main>
+            <Footer />
           </div>
         </Router>
       </WalletProvider>

@@ -39,28 +39,24 @@ export function ToastProvider({ children }) {
         {toasts.map((t) => (
           <div
             key={t.id}
-            className={`pointer-events-auto flex items-start gap-3 p-4 rounded-lg border shadow-xl backdrop-blur-md transition-all animate-in fade-in slide-in-from-bottom-5 ${
-              t.type === "success"
-                ? "bg-slate-900/95 border-emerald-500/30 text-emerald-100"
-                : t.type === "error"
-                ? "bg-slate-900/95 border-rose-500/30 text-rose-100"
-                : t.type === "pending"
-                ? "bg-slate-900/95 border-sky-500/30 text-sky-100"
-                : "bg-slate-900/95 border-slate-700 text-slate-100"
+            className={`pointer-events-auto flex items-start gap-3 p-4 rounded-lg border shadow-lg transition-all animate-in fade-in slide-in-from-bottom-5 ${
+              t.type === "error"
+                ? "bg-white border-rose-200 text-neutral-900"
+                : "bg-white border-neutral-200 text-neutral-900"
             }`}
           >
             <div className="mt-0.5 flex-shrink-0">
-              {t.type === "success" && <CheckCircle2 className="w-5 h-5 text-emerald-400" />}
-              {t.type === "error" && <AlertCircle className="w-5 h-5 text-rose-400" />}
-              {t.type === "pending" && <Loader2 className="w-5 h-5 text-sky-400 animate-spin" />}
-              {t.type === "info" && <AlertCircle className="w-5 h-5 text-slate-400" />}
+              {t.type === "success" && <CheckCircle2 className="w-5 h-5 text-emerald-600" />}
+              {t.type === "error" && <AlertCircle className="w-5 h-5 text-rose-600" />}
+              {t.type === "pending" && <Loader2 className="w-5 h-5 text-neutral-900 animate-spin" />}
+              {t.type === "info" && <AlertCircle className="w-5 h-5 text-neutral-500" />}
             </div>
 
             <div className="flex-1 min-w-0">
-              {t.title && <h4 className="text-sm font-semibold text-white leading-snug">{t.title}</h4>}
-              {t.message && <p className="text-xs text-slate-300 mt-0.5 break-words">{t.message}</p>}
+              {t.title && <h4 className="text-sm font-semibold text-neutral-950 leading-snug">{t.title}</h4>}
+              {t.message && <p className="text-xs text-neutral-600 mt-0.5 break-words">{t.message}</p>}
               {t.txHash && (
-                <div className="mt-2 pt-2 border-t border-slate-800 flex items-center gap-1.5 text-xs text-sky-400 font-mono">
+                <div className="mt-2 pt-2 border-t border-neutral-100 flex items-center gap-1.5 text-xs text-neutral-600 font-mono">
                   <span>Tx: {t.txHash.slice(0, 10)}...{t.txHash.slice(-8)}</span>
                 </div>
               )}
@@ -68,7 +64,7 @@ export function ToastProvider({ children }) {
 
             <button
               onClick={() => removeToast(t.id)}
-              className="text-slate-400 hover:text-white p-1 -mr-1 -mt-1 rounded transition-colors"
+              className="text-neutral-400 hover:text-neutral-900 p-1 -mr-1 -mt-1 rounded transition-colors"
             >
               <X className="w-4 h-4" />
             </button>

@@ -3,22 +3,22 @@ import { cva } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-sky-500 disabled:pointer-events-none disabled:opacity-50 select-none",
+  "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-neutral-950 disabled:pointer-events-none disabled:opacity-50 select-none",
   {
     variants: {
       variant: {
         default:
-          "bg-sky-600 text-white shadow hover:bg-sky-500 active:bg-sky-700",
+          "bg-neutral-900 text-white shadow-sm hover:bg-neutral-800 active:bg-neutral-950",
         destructive:
-          "bg-rose-600 text-white shadow-sm hover:bg-rose-500 active:bg-rose-700",
+          "bg-rose-600 text-white shadow-sm hover:bg-rose-700 active:bg-rose-800",
         outline:
-          "border border-slate-700 bg-slate-900/50 text-slate-200 shadow-sm hover:bg-slate-800 hover:text-white border-slate-700",
+          "border border-neutral-200 bg-white text-neutral-900 shadow-sm hover:bg-neutral-50 hover:text-neutral-900",
         secondary:
-          "bg-slate-800 text-slate-100 shadow-sm hover:bg-slate-700",
+          "bg-neutral-100 text-neutral-900 shadow-sm hover:bg-neutral-200/80",
         ghost:
-          "text-slate-300 hover:bg-slate-800 hover:text-white",
+          "text-neutral-700 hover:bg-neutral-100 hover:text-neutral-900",
         teal:
-          "bg-teal-600 text-white shadow hover:bg-teal-500 active:bg-teal-700",
+          "bg-neutral-900 text-white shadow-sm hover:bg-neutral-800 active:bg-neutral-950",
       },
       size: {
         default: "h-9 px-4 py-2",

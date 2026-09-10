@@ -158,13 +158,13 @@ export function AssetsPage() {
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800/80 pb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-neutral-200 pb-6">
         <div>
-          <h1 className="text-2xl font-bold text-white tracking-tight flex items-center gap-2">
-            <Layers className="h-6 w-6 text-teal-400" />
+          <h1 className="text-2xl font-bold text-neutral-950 tracking-tight flex items-center gap-2">
+            <Layers className="h-6 w-6 text-neutral-900" />
             <span>Digital Asset Registry</span>
           </h1>
-          <p className="text-sm text-slate-400 mt-1">
+          <p className="text-sm text-neutral-500 mt-1">
             Tokenized defense assets (ERC-721) with cryptographic provenance and verified identity ownership.
           </p>
         </div>
@@ -175,7 +175,7 @@ export function AssetsPage() {
             size="sm"
             onClick={loadAssets}
             disabled={loading}
-            className="gap-1.5 border-slate-700 bg-slate-900/60 hover:bg-slate-800 text-xs"
+            className="gap-1.5 border-neutral-200 bg-white hover:bg-neutral-50 text-neutral-700 text-xs"
           >
             <RefreshCw className={`h-3.5 w-3.5 ${loading ? "animate-spin" : ""}`} />
             <span>Refresh</span>
@@ -185,8 +185,7 @@ export function AssetsPage() {
             <Button
               onClick={() => setIsMintModalOpen(true)}
               size="sm"
-              variant="teal"
-              className="gap-1.5 text-xs text-white"
+              className="bg-neutral-900 hover:bg-neutral-800 text-white gap-1.5 text-xs"
             >
               <PlusCircle className="h-3.5 w-3.5" />
               <span>Mint Digital Asset</span>
@@ -209,13 +208,13 @@ export function AssetsPage() {
               size="sm"
               variant="outline"
               onClick={loadAssets}
-              className="text-xs h-8 border-slate-700 bg-slate-900/60 hover:bg-slate-800"
+              className="text-xs h-8 border-neutral-300 bg-white text-neutral-900 hover:bg-neutral-50"
             >
               Filter
             </Button>
           </div>
 
-          <label className="flex items-center gap-2 text-xs text-slate-400 cursor-pointer select-none">
+          <label className="flex items-center gap-2 text-xs text-neutral-600 cursor-pointer select-none">
             <input
               type="checkbox"
               checked={includeDecommissioned}
@@ -223,19 +222,19 @@ export function AssetsPage() {
                 setIncludeDecommissioned(e.target.checked);
                 setPage(1);
               }}
-              className="rounded border-slate-700 bg-slate-900 text-sky-600 focus:ring-sky-500"
+              className="rounded border-neutral-300 text-neutral-900 focus:ring-neutral-900"
             />
             <span>Include Decommissioned Assets</span>
           </label>
         </div>
 
-        <div className="text-xs text-slate-400 font-mono">
-          Total Registered Tokens: <span className="text-white font-semibold">{total}</span>
+        <div className="text-xs text-neutral-500 font-mono">
+          Total Registered Tokens: <span className="text-neutral-950 font-semibold">{total}</span>
         </div>
       </div>
 
       {/* Table */}
-      <Card className="border-slate-800 bg-slate-900/50">
+      <Card className="border-neutral-200 bg-white shadow-sm">
         <CardContent className="p-0">
           <Table>
             <TableHeader>
@@ -264,26 +263,26 @@ export function AssetsPage() {
                 ))
               ) : assets.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={isAdmin ? 7 : 6} className="text-center py-10 text-slate-500">
+                  <TableCell colSpan={isAdmin ? 7 : 6} className="text-center py-10 text-neutral-400">
                     No digital assets found matching query criteria.
                   </TableCell>
                 </TableRow>
               ) : (
                 assets.map((item) => (
                   <TableRow key={item._id}>
-                    <TableCell className="font-mono text-xs font-bold text-white">
+                    <TableCell className="font-mono text-xs font-bold text-neutral-950">
                       #{item.tokenId}
                     </TableCell>
-                    <TableCell className="font-mono text-xs text-teal-400">
+                    <TableCell className="font-mono text-xs text-neutral-900">
                       {item.ownerAddress}
                     </TableCell>
-                    <TableCell className="font-mono text-xs text-slate-300">
+                    <TableCell className="font-mono text-xs text-neutral-600">
                       <div className="flex items-center gap-1.5 max-w-xs truncate" title={item.metadataHash}>
-                        <FileText className="h-3.5 w-3.5 text-slate-500 flex-shrink-0" />
+                        <FileText className="h-3.5 w-3.5 text-neutral-400 flex-shrink-0" />
                         <span className="truncate">{item.metadataHash}</span>
                       </div>
                     </TableCell>
-                    <TableCell className="font-mono text-xs text-slate-400">
+                    <TableCell className="font-mono text-xs text-neutral-500">
                       {truncateAddress(item.mintedBy)}
                     </TableCell>
                     <TableCell>
@@ -291,7 +290,7 @@ export function AssetsPage() {
                         {item.isDecommissioned ? "Decommissioned" : "Active"}
                       </Badge>
                     </TableCell>
-                    <TableCell className="font-mono text-xs text-slate-400">
+                    <TableCell className="font-mono text-xs text-neutral-500">
                       {formatDate(item.mintedAt)}
                     </TableCell>
                     {isAdmin && (
@@ -329,7 +328,7 @@ export function AssetsPage() {
 
           <div className="space-y-4 py-2">
             <div>
-              <label className="text-xs font-semibold text-slate-300 block mb-1">
+              <label className="text-xs font-semibold text-neutral-700 block mb-1">
                 Recipient Wallet Address *
               </label>
               <Input
@@ -339,17 +338,17 @@ export function AssetsPage() {
                 className="font-mono text-xs"
                 required
               />
-              <p className="text-[10px] text-slate-500 mt-1">
+              <p className="text-[10px] text-neutral-400 mt-1">
                 Smart contract will revert if this account is not an active, registered DID.
               </p>
             </div>
 
             <div>
-              <label className="text-xs font-semibold text-slate-300 block mb-1">
+              <label className="text-xs font-semibold text-neutral-700 block mb-1">
                 Artifact Metadata Hash (IPFS CID / SHA-256) *
               </label>
               <Input
-                placeholder="QmBELRadarSystemSpec2026 or bafybeicg2..."
+                placeholder="QmSecureSystemArtifact2026 or bafybeicg2..."
                 value={mintFormData.metadataHash}
                 onChange={(e) => setMintFormData({ ...mintFormData, metadataHash: e.target.value })}
                 className="font-mono text-xs"
@@ -370,8 +369,7 @@ export function AssetsPage() {
             <Button
               type="submit"
               disabled={minting}
-              variant="teal"
-              className="text-white"
+              className="bg-neutral-900 hover:bg-neutral-800 text-white"
             >
               {minting ? "Authorizing & Minting..." : "Sign & Mint Token"}
             </Button>
