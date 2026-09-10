@@ -1,43 +1,51 @@
 /**
  * @file User.js
- * @description Mongoose model stub for User and Identity profiles.
- * 
- * FUTURE PURPOSE:
- * - Caches on-chain identity registrations and off-chain user profile details.
- * - Stores wallet address, DID identifier, assigned RBAC role, public key, and status.
- * 
- * TARGET PHASE:
- * - Phase 3: Backend — Express + Mongoose models, blockchain event listener/indexer, REST API
+ * @description Mongoose model for User identity profiles.
+ * @notice Read-optimized CACHE of on-chain identity state indexed from IdentityRegistry.sol.
+ *         The smart contract remains the ultimate source of truth.
+ * @phase Phase 3 (Backend & Blockchain Event Indexer)
  */
 
 const mongoose = require("mongoose");
 
-// TODO [Phase 3]: Implement full schema with indexes and validation
-/*
 const userSchema = new mongoose.Schema(
   {
-    // walletAddress: { type: String, required: true, unique: true, lowercase: true, index: true },
-    // did: { type: String, required: true, unique: true, index: true },
-    // role: { 
-    //   type: String, 
-    //   enum: ["ADMIN", "MANAGER", "AUDITOR", "USER"], 
-    //   default: "USER" 
-    // },
-    // name: { type: String, trim: true },
-    // email: { type: String, trim: true },
-    // organization: { type: String, default: "Bharat Electronics Limited" },
-    // publicKey: { type: String },
-    // didDocument: { type: Object },
-    // isActive: { type: Boolean, default: true },
-    // registeredAtBlock: { type: Number },
-    // transactionHash: { type: String }
+    address: {
+      type: String,
+      required: true,
+      unique: true,
+      lowercase: true,
+      trim: true,
+      index: true,
+    },
+    did: {
+      type: String,
+      required: true,
+      unique: true,
+      trim: true,
+    },
+    role: {
+      type: String,
+      required: true,
+      enum: ["ADMIN", "MANAGER", "AUDITOR", "USER"],
+      default: "USER",
+    },
+    isActive: {
+      type: Boolean,
+      default: true,
+    },
+    registeredAt: {
+      type: Date,
+      default: Date.now,
+    },
+    lastUpdatedAt: {
+      type: Date,
+      default: Date.now,
+    },
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+  }
 );
 
-module.exports = mongoose.model("User", userSchema);
-*/
-
-// Phase 0 placeholder export
-const userSchema = new mongoose.Schema({});
 module.exports = mongoose.models.User || mongoose.model("User", userSchema);

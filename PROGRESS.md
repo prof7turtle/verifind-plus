@@ -1,7 +1,7 @@
 # Progress Tracker — SIH 26125 Identity/Access/Asset Platform
 
 ## Current Phase
-Phase 2 — Smart Contracts: AssetNFT (COMPLETE)
+Phase 3 — Backend: Express + Mongoose + Blockchain Indexer (COMPLETE)
 
 ## Completed
 ### Phase 0 — Scaffolding
@@ -35,6 +35,17 @@ Phase 2 — Smart Contracts: AssetNFT (COMPLETE)
 - [x] Added comprehensive unit tests in placeholder.test.js (8 passing tests, 18 total across suite)
 - [x] Updated deploy.js to deploy AssetNFT and write both contract addresses to deployed-addresses.json
 
+### Phase 3 — Backend: Express + Mongoose + Blockchain Event Indexer
+- [x] Implemented real Mongoose models (User, Asset, AuditLog) with validation, indexes, and immutability guards
+- [x] Configured resilient MongoDB connection in config/db.js with exit-on-error handling
+- [x] Built blockchain event listener in services/blockchainListener.js subscribing to all 6 contract events via ethers.js
+- [x] Added chronological event backfill processing historical blocks on startup
+- [x] Implemented REST controllers and routes for identities (list, get by address)
+- [x] Implemented REST controllers and routes for assets (list, get by tokenId, owner filter, decommissioning flag)
+- [x] Implemented REST controllers and routes for audit logs (list with eventType/contractName filters, address history)
+- [x] Implemented /api/health endpoint reporting MongoDB and blockchain indexer real-time status
+- [x] Verified live integration on local node with MongoDB: events indexed and queried over REST API
+
 ## Tech Stack (fixed — do not change)
 - Contracts: Solidity, Hardhat, OpenZeppelin
 - Backend: Node.js, Express, MongoDB via Mongoose
@@ -42,14 +53,15 @@ Phase 2 — Smart Contracts: AssetNFT (COMPLETE)
 - No Next.js, no Docker for prototype phase
 
 ## Next Phase To Execute
-Phase 3 — Backend: Express + Mongoose + Blockchain Event Indexer
-Scope: Implement real Mongoose schemas (User, Asset, AuditLog) matching on-chain data shapes,
-build REST API routes (identity, assets, audit), and implement the ethers.js event listener in
-blockchainListener.js that subscribes to IdentityRegistry and AssetNFT events and writes decoded
-audit log entries into MongoDB. Do NOT start frontend logic yet.
+Phase 4 — Frontend: React + Vite + ethers.js
+Scope: Implement wallet connect (MetaMask), Admin panel (register identity form, mint asset form),
+Asset list view, Audit log view. Consume the Phase 3 REST API for read views; write operations
+(registerIdentity, mintAsset) call the smart contracts directly via ethers.js from the browser
+wallet, not through the backend. Do NOT modify backend/ or contracts/ in Phase 4.
 
 ## Notes / Decisions Log
 - 2026-09-10: Phase 0 scaffolding initialized. Folder structure, configs, contract skeletons, backend stubs, frontend React/Vite shell, sample data, and documentation created.
 - 2026-09-10: Confirmed lightweight prototype constraints (pure React + Vite JS, Express + Mongoose, Hardhat local chain).
 - 2026-09-10: Phase 1 complete. Implemented IdentityRegistry.sol with OpenZeppelin AccessControl, role admin hierarchies, audit trail events, full unit test suite, and deployed-addresses.json generation. Set ADMIN_ROLE as admin for MANAGER/AUDITOR/USER roles. Added input validation checks (zero address, empty DID string) to ensure contract safety.
 - 2026-09-10: Phase 2 complete. Implemented AssetNFT.sol linked to IdentityRegistry. Added Solidity 0.8.24 with cancun evmVersion to hardhat.config.js for OpenZeppelin v5 Bytes.sol/ERC721 compatibility. Full unit test suite passing (18/18 tests). Updated deploy.js and deployed-addresses.json.
+- 2026-09-10: Phase 3 complete. Implemented Mongoose models, Express REST endpoints, and ethers.js blockchain indexer. Immutability hooks added to AuditLog schema. Implemented chronological historical event backfill. Verified live end-to-end event indexing and API querying with local Hardhat node and MongoDB.

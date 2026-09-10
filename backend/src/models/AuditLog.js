@@ -1,51 +1,67 @@
 /**
  * @file AuditLog.js
- * @description Mongoose model stub for immutable on-chain audit log index.
- * 
- * FUTURE PURPOSE:
- * - Stores structured, queryable records of all events emitted by smart contracts.
- * - Records identity registrations, role updates, asset minting, transfers, and revocations.
- * - Enables auditors to filter actions by user, date, event type, and verify against tx hash.
- * 
- * TARGET PHASE:
- * - Phase 3: Backend — Express + Mongoose models, blockchain event listener/indexer, REST API
+ * @description Mongoose model for the immutable, append-only blockchain event audit log.
+ * @notice Stores every state change emitted by IdentityRegistry and AssetNFT.
+ *         Documents in this collection must NEVER be updated or deleted.
+ * @phase Phase 3 (Backend & Blockchain Event Indexer)
  */
 
 const mongoose = require("mongoose");
 
-// TODO [Phase 3]: Implement full schema with indexes and validation
-/*
 const auditLogSchema = new mongoose.Schema(
   {
-    // eventType: { 
-    //   type: String, 
-    //   required: true, 
-    //   enum: [
-    //     "IDENTITY_REGISTERED", 
-    //     "ROLE_GRANTED", 
-    //     "ROLE_REVOKED", 
-    //     "IDENTITY_DEACTIVATED", 
-    //     "ASSET_MINTED", 
-    //     "ASSET_TRANSFERRED", 
-    //     "ASSET_DECOMMISSIONED"
-    //   ],
-    //   index: true 
-    // },
-    // contractAddress: { type: String, required: true, lowercase: true },
-    // transactionHash: { type: String, required: true, index: true },
-    // blockNumber: { type: Number, required: true, index: true },
-    // performerAddress: { type: String, lowercase: true, index: true },
-    // targetAddress: { type: String, lowercase: true },
-    // tokenId: { type: String },
-    // payload: { type: mongoose.Schema.Types.Mixed },
-    // timestamp: { type: Date, default: Date.now, index: true }
+    eventType: {
+      type: String,
+      required: true,
+      enum: [
+        "IdentityRegistered",
+        "IdentityDeactivated",
+        "RoleGrantedAudit",
+        "AssetMinted",
+        "AssetTransferredWithAudit",
+        "AssetDecommissioned",
+      ],
+      index: true,
+    },
+    contractName: {
+      type: String,
+      required: true,
+      enum: ["IdentityRegistry", "AssetNFT"],
+      index: true,
+    },
+    transactionHash: {
+      type: String,
+      required: true,
+      index: true,
+    },
+    blockNumber: {
+      type: Number,
+      required: true,
+      index: true,
+    },
+    args: {
+      type: mongoose.Schema.Types.Mixed,
+      required: true,
+    },
+    timestamp: {
+      type: Date,
+      required: true,
+      default: Date.now,
+      index: true,
+    },
   },
-  { timestamps: true }
+  {
+    timestamps: { createdAt: true, updatedAt: false }, // Append-only; no updatedAt
+  }
 );
 
-module.exports = mongoose.model("AuditLog", auditLogSchema);
-*/
+// Prevent accidental updates/deletions on the Mongoose model level
+auditLogSchema.pre(["updateOne", "updateMany", "findOneAndUpdate"], function () {
+  throw new Error("AuditLog documents are immutable and cannot be updated.");
+});
 
-// Phase 0 placeholder export
-const auditLogSchema = new mongoose.Schema({});
+auditLogSchema.pre(["deleteOne", "deleteMany", "findOneAndDelete"], function () {
+  throw new Error("AuditLog documents are immutable and cannot be deleted.");
+});
+
 module.exports = mongoose.models.AuditLog || mongoose.model("AuditLog", auditLogSchema);

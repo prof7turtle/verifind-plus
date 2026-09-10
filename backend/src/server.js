@@ -1,63 +1,81 @@
 /**
  * @file server.js
  * @description Main entry point for the Express backend service.
- * 
- * FUTURE PURPOSE:
- * - Bootstraps Express server with security and logging middlewares (cors, express.json, morgan).
- * - Connects to MongoDB via Mongoose.
- * - Initializes the blockchain event listener service (ethers.js) to sync on-chain events.
- * - Mounts REST API routes for identities, assets, RBAC checks, and audit trail retrieval.
- * 
- * TARGET PHASE:
- * - Phase 3: Backend — Express + Mongoose models, blockchain event listener/indexer, REST API
+ * @notice REST API server and blockchain event indexer for VeriFind Plus (SIH 26125).
+ * @phase Phase 3 (Backend & Blockchain Event Indexer)
  */
 
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
+const morgan = require("morgan");
+const mongoose = require("mongoose");
 const { connectDB } = require("./config/db");
+const { startListening, getListenerStatus } = require("./services/blockchainListener");
+
+const identityRoutes = require("./routes/identity.routes");
+const assetRoutes = require("./routes/asset.routes");
+const auditRoutes = require("./routes/audit.routes");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Basic middleware
+// Middlewares
 app.use(cors({ origin: process.env.CLIENT_ORIGIN || "*" }));
 app.use(express.json());
+if (process.env.NODE_ENV !== "test") {
+  app.use(morgan("dev"));
+}
 
 // Health check endpoint
 app.get("/api/health", (req, res) => {
+  const isDbConnected = mongoose.connection.readyState === 1;
+  const listenerStatus = getListenerStatus();
+
   res.status(200).json({
-    status: "ok",
+    status: isDbConnected ? "ok" : "degraded",
     service: "sih26125-backend",
-    phase: "Phase 0 (Scaffold)",
+    phase: "Phase 3 (Backend & Indexer)",
+    database: {
+      connected: isDbConnected,
+      readyState: mongoose.connection.readyState,
+    },
+    blockchainListener: listenerStatus,
     timestamp: new Date().toISOString(),
+    uptime: process.uptime(),
   });
 });
 
-// TODO [Phase 3]: Mount routes
-// app.use("/api/identity", identityRoutes);
-// app.use("/api/assets", assetRoutes);
-// app.use("/api/audit", auditRoutes);
+// API Routes
+app.use("/api/identity", identityRoutes);
+app.use("/api/assets", assetRoutes);
+app.use("/api/audit", auditRoutes);
+
+// Catch-all 404 handler for undefined API routes
+app.use((req, res) => {
+  res.status(404).json({ success: false, message: `Route ${req.originalUrl} not found` });
+});
 
 async function startServer() {
   try {
-    // Connect to database placeholder
+    // 1. Connect to MongoDB
     await connectDB();
 
-    // TODO [Phase 3]: Start blockchain event listener service
-    // const { startBlockchainListener } = require("./services/blockchainListener");
-    // startBlockchainListener();
+    // 2. Start Blockchain Indexer / Listener
+    await startListening();
 
+    // 3. Start Express HTTP Server
     app.listen(PORT, () => {
-      console.log(`[Phase 0 Skeleton] Server running on port ${PORT}`);
+      console.log(`[Server] Express running on port ${PORT} (http://localhost:${PORT})`);
+      console.log(`[Server] Health check available at http://localhost:${PORT}/api/health`);
     });
   } catch (error) {
-    console.error("Failed to start server:", error);
+    console.error("[Server] Fatal error on startup:", error.message);
     process.exit(1);
   }
 }
 
-// Allow importing app for testing without automatically listening if needed
+// Allow importing app for testing without starting the server
 if (require.main === module) {
   startServer();
 }
