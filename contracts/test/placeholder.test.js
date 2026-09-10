@@ -177,13 +177,155 @@ describe("SIH 26125 Smart Contracts Suite", function () {
   });
 
   describe("AssetNFT Contract", function () {
-    it("should only allow authorized roles (ADMIN/MANAGER) to mint assets", async function () {
-      // TODO [Phase 2]: Implement role-restricted minting test
-      expect(true).to.equal(true);
+    let identityRegistry;
+    let assetNFT;
+    let owner;
+    let minter;
+    let admin;
+    let user1;
+    let user2;
+    let unregisteredUser;
+
+    let DEFAULT_ADMIN_ROLE;
+    let ADMIN_ROLE;
+    let MINTER_ROLE;
+
+    const sampleDid1 = "did:ethr:0x70997970C51812dc3A010C7d01b50e0d17dc79C8";
+    const sampleDid2 = "did:key:z6MkhaXgBZDvotDkL5257faiztiGiC2QtKLGpbnnEGta2doK";
+    const sampleMetadataHash = "QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco";
+    const sampleMetadataHash2 = "bafybeicg2gggnxtwhvkvsap7tvkzg5x6f45o5s7g7u4nugf2hsmzrqzspq";
+
+    beforeEach(async function () {
+      [owner, minter, admin, user1, user2, unregisteredUser] = await ethers.getSigners();
+
+      // Deploy IdentityRegistry first
+      const IdentityRegistry = await ethers.getContractFactory("IdentityRegistry");
+      identityRegistry = await IdentityRegistry.deploy();
+      await identityRegistry.waitForDeployment();
+
+      // Register identities for user1 and user2
+      const USER_ROLE = await identityRegistry.USER_ROLE();
+      await identityRegistry.connect(owner).registerIdentity(user1.address, sampleDid1, USER_ROLE);
+      await identityRegistry.connect(owner).registerIdentity(user2.address, sampleDid2, USER_ROLE);
+
+      // Deploy AssetNFT linked to IdentityRegistry
+      const AssetNFT = await ethers.getContractFactory("AssetNFT");
+      assetNFT = await AssetNFT.deploy(await identityRegistry.getAddress());
+      await assetNFT.waitForDeployment();
+
+      DEFAULT_ADMIN_ROLE = await assetNFT.DEFAULT_ADMIN_ROLE();
+      ADMIN_ROLE = await assetNFT.ADMIN_ROLE();
+      MINTER_ROLE = await assetNFT.MINTER_ROLE();
     });
 
-    it("should only allow asset transfer to registered identities", async function () {
-      // TODO [Phase 2]: Implement recipient identity verification test
+    it("should assign DEFAULT_ADMIN_ROLE, MINTER_ROLE, and ADMIN_ROLE to deployer on deployment", async function () {
+      expect(await assetNFT.hasRole(DEFAULT_ADMIN_ROLE, owner.address)).to.equal(true);
+      expect(await assetNFT.hasRole(ADMIN_ROLE, owner.address)).to.equal(true);
+      expect(await assetNFT.hasRole(MINTER_ROLE, owner.address)).to.equal(true);
+
+      expect(await assetNFT.hasRole(MINTER_ROLE, unregisteredUser.address)).to.equal(false);
+      expect(await assetNFT.hasRole(ADMIN_ROLE, unregisteredUser.address)).to.equal(false);
+      expect(await assetNFT.identityRegistry()).to.equal(await identityRegistry.getAddress());
+    });
+
+    it("should revert minting to an address WITHOUT a registered active identity in IdentityRegistry", async function () {
+      await expect(
+        assetNFT.connect(owner).mintAsset(unregisteredUser.address, sampleMetadataHash)
+      ).to.be.revertedWith("Recipient has no active identity");
+
+      // Deactivated user should also revert
+      await identityRegistry.connect(owner).deactivateIdentity(user1.address);
+      await expect(
+        assetNFT.connect(owner).mintAsset(user1.address, sampleMetadataHash)
+      ).to.be.revertedWith("Recipient has no active identity");
+    });
+
+    it("should succeed minting to an address WITH an active identity, incrementing token ID and emitting AssetMinted", async function () {
+      const tx1 = await assetNFT.connect(owner).mintAsset(user1.address, sampleMetadataHash);
+      const receipt1 = await tx1.wait();
+      const block1 = await ethers.provider.getBlock(receipt1.blockNumber);
+
+      await expect(tx1)
+        .to.emit(assetNFT, "AssetMinted")
+        .withArgs(1, user1.address, sampleMetadataHash, owner.address, block1.timestamp);
+
+      expect(await assetNFT.ownerOf(1)).to.equal(user1.address);
+      expect(await assetNFT.assetMetadataHash(1)).to.equal(sampleMetadataHash);
+      expect(await assetNFT.mintedAt(1)).to.equal(block1.timestamp);
+
+      // Second mint increments token ID to 2
+      const tx2 = await assetNFT.connect(owner).mintAsset(user2.address, sampleMetadataHash2);
+      const receipt2 = await tx2.wait();
+      const block2 = await ethers.provider.getBlock(receipt2.blockNumber);
+
+      await expect(tx2)
+        .to.emit(assetNFT, "AssetMinted")
+        .withArgs(2, user2.address, sampleMetadataHash2, owner.address, block2.timestamp);
+
+      expect(await assetNFT.ownerOf(2)).to.equal(user2.address);
+      expect(await assetNFT.assetMetadataHash(2)).to.equal(sampleMetadataHash2);
+    });
+
+    it("should revert if non-minter accounts attempt to call mintAsset", async function () {
+      await expect(
+        assetNFT.connect(unregisteredUser).mintAsset(user1.address, sampleMetadataHash)
+      ).to.be.revertedWithCustomError(assetNFT, "AccessControlUnauthorizedAccount");
+    });
+
+    it("should emit AssetTransferredWithAudit on token transfer between addresses", async function () {
+      await assetNFT.connect(owner).mintAsset(user1.address, sampleMetadataHash);
+
+      const tx = await assetNFT.connect(user1).transferFrom(user1.address, user2.address, 1);
+      const receipt = await tx.wait();
+      const block = await ethers.provider.getBlock(receipt.blockNumber);
+
+      await expect(tx)
+        .to.emit(assetNFT, "AssetTransferredWithAudit")
+        .withArgs(1, user1.address, user2.address, block.timestamp);
+
+      expect(await assetNFT.ownerOf(1)).to.equal(user2.address);
+    });
+
+    it("should allow admin to decommissionAsset, burning token and emitting AssetDecommissioned", async function () {
+      await assetNFT.connect(owner).mintAsset(user1.address, sampleMetadataHash);
+
+      const tx = await assetNFT.connect(owner).decommissionAsset(1);
+      const receipt = await tx.wait();
+      const block = await ethers.provider.getBlock(receipt.blockNumber);
+
+      await expect(tx)
+        .to.emit(assetNFT, "AssetDecommissioned")
+        .withArgs(1, owner.address, block.timestamp);
+
+      // ownerOf should revert for burned token
+      await expect(assetNFT.ownerOf(1)).to.be.revertedWithCustomError(
+        assetNFT,
+        "ERC721NonexistentToken"
+      );
+    });
+
+    it("should revert decommissionAsset if called by non-admin accounts", async function () {
+      await assetNFT.connect(owner).mintAsset(user1.address, sampleMetadataHash);
+
+      await expect(
+        assetNFT.connect(unregisteredUser).decommissionAsset(1)
+      ).to.be.revertedWithCustomError(assetNFT, "AccessControlUnauthorizedAccount");
+    });
+
+    it("should return correct asset details via getAssetInfo and revert for nonexistent tokens", async function () {
+      const tx = await assetNFT.connect(owner).mintAsset(user1.address, sampleMetadataHash);
+      const receipt = await tx.wait();
+      const block = await ethers.provider.getBlock(receipt.blockNumber);
+
+      const info = await assetNFT.getAssetInfo(1);
+      expect(info.owner).to.equal(user1.address);
+      expect(info.metadataHash).to.equal(sampleMetadataHash);
+      expect(info.timestamp).to.equal(block.timestamp);
+
+      await expect(assetNFT.getAssetInfo(999)).to.be.revertedWithCustomError(
+        assetNFT,
+        "ERC721NonexistentToken"
+      );
     });
   });
 });

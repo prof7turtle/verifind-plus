@@ -1,8 +1,9 @@
 /**
  * @file deploy.js
  * @description Hardhat deployment script for SIH 26125 smart contracts.
- *              Deploys IdentityRegistry, logs address, and writes deployed-addresses.json.
- * @phase Phase 1 (IdentityRegistry deployment implemented) & Phase 2 (AssetNFT deployment placeholder).
+ *              Deploys IdentityRegistry, then AssetNFT (passing IdentityRegistry address),
+ *              logs addresses, and writes deployed-addresses.json.
+ * @phase Phase 1 (IdentityRegistry) & Phase 2 (AssetNFT) deployed.
  */
 
 const hre = require("hardhat");
@@ -20,16 +21,19 @@ async function main() {
 
   console.log("IdentityRegistry deployed successfully to:", identityRegistryAddress);
 
-  // TODO [Phase 2]: Deploy AssetNFT linked to IdentityRegistry
-  // const AssetNFT = await hre.ethers.getContractFactory("AssetNFT");
-  // const assetNft = await AssetNFT.deploy(identityRegistryAddress);
-  // await assetNft.waitForDeployment();
-  // console.log("AssetNFT deployed to:", await assetNft.getAddress());
+  // Phase 2: Deploy AssetNFT linked to IdentityRegistry
+  const AssetNFT = await hre.ethers.getContractFactory("AssetNFT");
+  const assetNft = await AssetNFT.deploy(identityRegistryAddress);
+  await assetNft.waitForDeployment();
+  const assetNftAddress = await assetNft.getAddress();
+
+  console.log("AssetNFT deployed successfully to:", assetNftAddress);
 
   // Save deployed addresses record
   const networkName = hre.network.name || "localhost";
   const outputData = {
     identityRegistry: identityRegistryAddress,
+    assetNFT: assetNftAddress,
     network: networkName,
     deployedAt: new Date().toISOString(),
   };
