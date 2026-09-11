@@ -12,10 +12,10 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Input, Select } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
-import { truncateAddress, formatDate } from "@/lib/utils";
+import { truncateAddress, formatDate, waitForTxReceipt } from "@/lib/utils";
 
 export function IdentitiesPage() {
-  const { account, signer, connectPersona } = useWallet();
+  const { account, signer, provider, connectPersona } = useWallet();
   const { role, isAdmin } = useRole();
   const toast = useToast();
 
@@ -72,7 +72,7 @@ export function IdentitiesPage() {
 
     const roleHash = ROLE_HASHES[formData.roleKey];
     setSubmitting(true);
-    const toastId = toast.pending("Submitting Transaction", "Awaiting confirmation from your wallet...");
+    let activeToastId = toast.pending("Submitting Transaction", "Awaiting approval from your wallet...");
 
     try {
       const identityContract = getIdentityContract(signer);
@@ -82,15 +82,15 @@ export function IdentitiesPage() {
         roleHash
       );
 
-      toast.dismiss(toastId);
-      toast.pending("Confirming On-Chain", `Transaction ${tx.hash.slice(0, 10)}... pending confirmation...`);
+      toast.dismiss(activeToastId);
+      activeToastId = toast.pending("Confirming On-Chain", `Transaction ${tx.hash.slice(0, 10)}... mining block...`);
 
-      const receipt = await tx.wait();
-      toast.dismiss(toastId);
+      const receipt = await waitForTxReceipt(tx, provider);
+      toast.dismiss(activeToastId);
       toast.success(
         "Identity Registered Successfully",
         `New DID registered on-chain for ${truncateAddress(formData.userAddress)}`,
-        receipt.hash
+        receipt?.hash || tx.hash
       );
 
       setIsModalOpen(false);
@@ -99,9 +99,9 @@ export function IdentitiesPage() {
       // Refresh list after brief delay to allow indexer to ingest event
       setTimeout(() => {
         loadIdentities();
-      }, 1200);
+      }, 1000);
     } catch (err) {
-      toast.dismiss(toastId);
+      toast.dismiss(activeToastId);
       const reason = err.reason || err.data?.message || err.message;
       toast.error("Registration Failed", reason);
     } finally {

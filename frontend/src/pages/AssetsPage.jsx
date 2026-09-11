@@ -25,10 +25,10 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
-import { truncateAddress, formatDate } from "@/lib/utils";
+import { truncateAddress, formatDate, waitForTxReceipt } from "@/lib/utils";
 
 export function AssetsPage() {
-  const { account, signer, connectPersona } = useWallet();
+  const { account, signer, provider, connectPersona } = useWallet();
   const { role, isAdmin, isManager } = useRole();
   const toast = useToast();
 
@@ -102,7 +102,7 @@ export function AssetsPage() {
     }
 
     setMinting(true);
-    const toastId = toast.pending("Broadcasting Mint Transaction", "Awaiting approval from your wallet...");
+    let activeToastId = toast.pending("Broadcasting Mint Transaction", "Awaiting approval from your wallet...");
 
     try {
       const assetContract = getAssetContract(signer);
@@ -111,15 +111,15 @@ export function AssetsPage() {
         mintFormData.metadataHash.trim()
       );
 
-      toast.dismiss(toastId);
-      toast.pending("Confirming Mint On-Chain", `Transaction ${tx.hash.slice(0, 10)}... mining block...`);
+      toast.dismiss(activeToastId);
+      activeToastId = toast.pending("Confirming Mint On-Chain", `Transaction ${tx.hash.slice(0, 10)}... mining block...`);
 
-      const receipt = await tx.wait();
-      toast.dismiss(toastId);
+      const receipt = await waitForTxReceipt(tx, provider);
+      toast.dismiss(activeToastId);
       toast.success(
         "Digital Asset Minted Successfully",
         `Token minted for verified recipient ${truncateAddress(mintFormData.recipientAddress)}`,
-        receipt.hash
+        receipt?.hash || tx.hash
       );
 
       setIsMintModalOpen(false);
@@ -127,9 +127,9 @@ export function AssetsPage() {
 
       setTimeout(() => {
         loadAssets();
-      }, 1200);
+      }, 1000);
     } catch (err) {
-      toast.dismiss(toastId);
+      toast.dismiss(activeToastId);
       let errorMsg = err.reason || err.data?.message || err.message;
       if (err.message && err.message.includes("Recipient has no active identity")) {
         errorMsg = "Verification Failed: Recipient address has no active identity in IdentityRegistry.sol";
@@ -153,7 +153,7 @@ export function AssetsPage() {
     }
 
     setTransferring(true);
-    const toastId = toast.pending("Transferring Asset", "Awaiting approval from your wallet...");
+    let activeToastId = toast.pending("Transferring Asset", "Awaiting approval from your wallet...");
 
     try {
       const assetContract = getAssetContract(signer);
@@ -170,15 +170,15 @@ export function AssetsPage() {
 
       const tx = await assetContract.transferFrom(currentTokenOwner, targetRecipient, currentTokenId);
 
-      toast.dismiss(toastId);
-      toast.pending("Confirming Handover On-Chain", `Transaction ${tx.hash.slice(0, 10)}... confirming...`);
+      toast.dismiss(activeToastId);
+      activeToastId = toast.pending("Confirming Handover On-Chain", `Transaction ${tx.hash.slice(0, 10)}... confirming...`);
 
-      const receipt = await tx.wait();
-      toast.dismiss(toastId);
+      const receipt = await waitForTxReceipt(tx, provider);
+      toast.dismiss(activeToastId);
       toast.success(
         "Asset Access Granted (Transferred)",
         `Token #${currentTokenId} transferred to ${truncateAddress(targetRecipient)}`,
-        receipt.hash
+        receipt?.hash || tx.hash
       );
 
       setIsTransferModalOpen(false);
@@ -186,9 +186,9 @@ export function AssetsPage() {
 
       setTimeout(() => {
         loadAssets();
-      }, 1200);
+      }, 1000);
     } catch (err) {
-      toast.dismiss(toastId);
+      toast.dismiss(activeToastId);
       toast.error("Transfer Failed", err.reason || err.data?.message || err.message);
     } finally {
       setTransferring(false);
@@ -202,29 +202,29 @@ export function AssetsPage() {
     }
 
     setDecommissioning(true);
-    const toastId = toast.pending("Decommissioning Asset", `Burning token #${tokenId} on-chain...`);
+    let activeToastId = toast.pending("Decommissioning Asset", `Burning token #${tokenId} on-chain...`);
 
     try {
       const assetContract = getAssetContract(signer);
       const tx = await assetContract.decommissionAsset(tokenId);
 
-      toast.dismiss(toastId);
-      toast.pending("Confirming Decommission", `Transaction ${tx.hash.slice(0, 10)}... confirming...`);
+      toast.dismiss(activeToastId);
+      activeToastId = toast.pending("Confirming Decommission", `Transaction ${tx.hash.slice(0, 10)}... confirming...`);
 
-      const receipt = await tx.wait();
-      toast.dismiss(toastId);
+      const receipt = await waitForTxReceipt(tx, provider);
+      toast.dismiss(activeToastId);
       toast.success(
         "Asset Decommissioned",
         `Token #${tokenId} burned and status permanently recorded.`,
-        receipt.hash
+        receipt?.hash || tx.hash
       );
 
       setDecommissionTokenId(null);
       setTimeout(() => {
         loadAssets();
-      }, 1200);
+      }, 1000);
     } catch (err) {
-      toast.dismiss(toastId);
+      toast.dismiss(activeToastId);
       toast.error("Decommission Failed", err.reason || err.message);
     } finally {
       setDecommissioning(false);

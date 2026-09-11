@@ -24,12 +24,17 @@ export function ToastProvider({ children }) {
     setToasts((prev) => prev.filter((t) => t.id !== id));
   }, []);
 
+  const dismissAll = useCallback(() => {
+    setToasts([]);
+  }, []);
+
   const toast = {
     info: (title, message) => addToast({ type: "info", title, message }),
     success: (title, message, txHash) => addToast({ type: "success", title, message, txHash }),
     error: (title, message) => addToast({ type: "error", title, message, duration: 8000 }),
-    pending: (title, message) => addToast({ type: "pending", title, message, duration: 0 }),
+    pending: (title, message) => addToast({ type: "pending", title, message, duration: 15000 }),
     dismiss: removeToast,
+    dismissAll,
   };
 
   return (
