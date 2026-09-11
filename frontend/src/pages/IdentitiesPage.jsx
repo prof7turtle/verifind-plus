@@ -15,8 +15,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { truncateAddress, formatDate } from "@/lib/utils";
 
 export function IdentitiesPage() {
-  const { account, signer } = useWallet();
-  const { isAdmin } = useRole();
+  const { account, signer, connectPersona } = useWallet();
+  const { role, isAdmin } = useRole();
   const toast = useToast();
 
   const [identities, setIdentities] = useState([]);
@@ -28,6 +28,7 @@ export function IdentitiesPage() {
 
   // Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isRoleHelpModalOpen, setIsRoleHelpModalOpen] = useState(false);
   const [formData, setFormData] = useState({
     userAddress: "",
     did: "",
@@ -134,16 +135,25 @@ export function IdentitiesPage() {
             <span>Refresh</span>
           </Button>
 
-          {isAdmin && (
-            <Button
-              onClick={() => setIsModalOpen(true)}
-              size="sm"
-              className="bg-neutral-900 hover:bg-neutral-800 text-white gap-1.5 text-xs"
-            >
-              <PlusCircle className="h-3.5 w-3.5" />
-              <span>Register New Identity</span>
-            </Button>
-          )}
+          <Button
+            onClick={() => {
+              if (isAdmin) {
+                setIsModalOpen(true);
+              } else {
+                setIsRoleHelpModalOpen(true);
+              }
+            }}
+            size="sm"
+            className="bg-neutral-900 hover:bg-neutral-800 text-white gap-1.5 text-xs shadow-sm"
+          >
+            <PlusCircle className="h-3.5 w-3.5" />
+            <span>Register New Identity</span>
+            {!isAdmin && (
+              <span className="text-[10px] bg-neutral-800 text-neutral-300 font-mono px-1.5 py-0.5 rounded ml-1">
+                Admin
+              </span>
+            )}
+          </Button>
         </div>
       </div>
 
@@ -315,6 +325,65 @@ export function IdentitiesPage() {
             </Button>
           </DialogFooter>
         </form>
+      </Dialog>
+
+      {/* Admin Role Guidance Dialog */}
+      <Dialog open={isRoleHelpModalOpen} onOpenChange={setIsRoleHelpModalOpen}>
+        <div className="space-y-4">
+          <DialogHeader>
+            <div className="flex items-center gap-2 mb-1">
+              <div className="h-8 w-8 rounded-lg bg-neutral-100 border border-neutral-200 flex items-center justify-center text-neutral-900">
+                <Shield className="h-4 w-4" />
+              </div>
+              <DialogTitle className="text-lg font-bold text-neutral-950">
+                ADMIN_ROLE Required
+              </DialogTitle>
+            </div>
+            <DialogDescription className="text-xs text-neutral-500 leading-relaxed">
+              Registering new Decentralized Identifiers (DIDs) on the Ethereum blockchain is restricted
+              at the smart contract level to accounts with <span className="font-mono font-semibold text-neutral-900">ADMIN_ROLE</span>.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="rounded-lg border border-neutral-200 bg-neutral-50 p-3 text-xs space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-neutral-500">Your Current Connected Role:</span>
+              <Badge variant={role === "MANAGER" ? "manager" : role === "AUDITOR" ? "auditor" : "user"}>
+                {role || "NOT CONNECTED"}
+              </Badge>
+            </div>
+            <p className="text-[11px] text-neutral-600">
+              To test or register new defense personnel identities, switch to an authorized Admin account below:
+            </p>
+          </div>
+
+          <div className="space-y-2 pt-1">
+            <Button
+              onClick={() => {
+                connectPersona("0x70997970C51812dc3A010C7d01b50e0d17dc79C8");
+                setIsRoleHelpModalOpen(false);
+                setTimeout(() => setIsModalOpen(true), 300);
+              }}
+              className="w-full justify-between bg-neutral-900 hover:bg-neutral-800 text-white text-xs h-10"
+            >
+              <span>Switch to Commander A. Sharma (SecOps Admin)</span>
+              <span className="font-mono text-[10px] text-neutral-400">0x7099...79C8</span>
+            </Button>
+
+            <Button
+              variant="outline"
+              onClick={() => {
+                connectPersona("0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266");
+                setIsRoleHelpModalOpen(false);
+                setTimeout(() => setIsModalOpen(true), 300);
+              }}
+              className="w-full justify-between border-neutral-300 hover:bg-neutral-50 text-neutral-900 text-xs h-10"
+            >
+              <span>Switch to Primary Deployer / Architect</span>
+              <span className="font-mono text-[10px] text-neutral-500">0xf39F...2266</span>
+            </Button>
+          </div>
+        </div>
       </Dialog>
     </div>
   );

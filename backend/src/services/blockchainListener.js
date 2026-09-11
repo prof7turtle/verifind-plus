@@ -78,6 +78,15 @@ function loadContractConfigs() {
   };
 }
 
+function getTxAndBlock(event) {
+  const txHash =
+    event?.log?.transactionHash ||
+    event?.transactionHash ||
+    "0x0000000000000000000000000000000000000000000000000000000000000000";
+  const blockNum = Number(event?.log?.blockNumber ?? event?.blockNumber ?? 0);
+  return { txHash, blockNum };
+}
+
 /**
  * Handles IdentityRegistered event.
  */
@@ -86,8 +95,7 @@ async function handleIdentityRegistered(user, did, role, timestamp, event) {
     const userAddress = user.toLowerCase();
     const roleName = formatRole(role);
     const eventTime = new Date(Number(timestamp) * 1000);
-    const txHash = event.log.transactionHash;
-    const blockNum = event.log.blockNumber;
+    const { txHash, blockNum } = getTxAndBlock(event);
 
     // Check duplicate audit log
     const existingLog = await AuditLog.findOne({
@@ -133,8 +141,7 @@ async function handleIdentityDeactivated(user, timestamp, event) {
   try {
     const userAddress = user.toLowerCase();
     const eventTime = new Date(Number(timestamp) * 1000);
-    const txHash = event.log.transactionHash;
-    const blockNum = event.log.blockNumber;
+    const { txHash, blockNum } = getTxAndBlock(event);
 
     const existingLog = await AuditLog.findOne({
       transactionHash: txHash,
@@ -173,8 +180,7 @@ async function handleRoleGrantedAudit(user, role, grantedBy, timestamp, event) {
     const granterAddress = grantedBy.toLowerCase();
     const roleName = formatRole(role);
     const eventTime = new Date(Number(timestamp) * 1000);
-    const txHash = event.log.transactionHash;
-    const blockNum = event.log.blockNumber;
+    const { txHash, blockNum } = getTxAndBlock(event);
 
     const existingLog = await AuditLog.findOne({
       transactionHash: txHash,
@@ -218,8 +224,7 @@ async function handleAssetMinted(tokenId, owner, metadataHash, mintedBy, timesta
     const ownerAddress = owner.toLowerCase();
     const minterAddress = mintedBy.toLowerCase();
     const eventTime = new Date(Number(timestamp) * 1000);
-    const txHash = event.log.transactionHash;
-    const blockNum = event.log.blockNumber;
+    const { txHash, blockNum } = getTxAndBlock(event);
 
     const existingLog = await AuditLog.findOne({
       transactionHash: txHash,
@@ -274,8 +279,7 @@ async function handleAssetTransferredWithAudit(tokenId, from, to, timestamp, eve
     const fromAddress = from.toLowerCase();
     const toAddress = to.toLowerCase();
     const eventTime = new Date(Number(timestamp) * 1000);
-    const txHash = event.log.transactionHash;
-    const blockNum = event.log.blockNumber;
+    const { txHash, blockNum } = getTxAndBlock(event);
 
     const existingLog = await AuditLog.findOne({
       transactionHash: txHash,
@@ -318,8 +322,7 @@ async function handleAssetDecommissioned(tokenId, decommissionedBy, timestamp, e
     const id = Number(tokenId);
     const adminAddress = decommissionedBy.toLowerCase();
     const eventTime = new Date(Number(timestamp) * 1000);
-    const txHash = event.log.transactionHash;
-    const blockNum = event.log.blockNumber;
+    const { txHash, blockNum } = getTxAndBlock(event);
 
     const existingLog = await AuditLog.findOne({
       transactionHash: txHash,
@@ -438,6 +441,7 @@ async function startListening() {
     listenerState.assetNFTAddress = assetNFTAddress;
 
     const provider = new ethers.JsonRpcProvider(rpcUrl);
+    provider.pollingInterval = 1000;
 
     // Test connectivity to RPC provider
     let currentBlock = 0;

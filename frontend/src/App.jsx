@@ -10,6 +10,7 @@ import { IdentitiesPage } from "@/pages/IdentitiesPage";
 import { AssetsPage } from "@/pages/AssetsPage";
 import { AuditPage } from "@/pages/AuditPage";
 import { Footer } from "@/components/Footer";
+import { SelectRoleModal } from "@/components/SelectRoleModal";
 
 export default function App() {
   return (
@@ -18,6 +19,7 @@ export default function App() {
         <Router>
           <div className="min-h-screen bg-white text-neutral-950 flex flex-col antialiased selection:bg-neutral-900 selection:text-white">
             <Navbar />
+            <SelectRoleModal />
             <main className="flex-1">
               <Routes>
                 <Route path="/" element={<LandingPage />} />

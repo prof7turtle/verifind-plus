@@ -1,7 +1,7 @@
 # Progress Tracker — SIH 26125 Identity/Access/Asset Platform
 
 ## Current Phase
-Phase 4 — Frontend (COMPLETE)
+Phase 5 — Integration & Seed Data (COMPLETE)
 
 ## Completed
 ### Phase 0 — Scaffolding
@@ -60,6 +60,18 @@ Phase 4 — Frontend (COMPLETE)
 - [x] Synced contract ABIs and deployed addresses into frontend/src/contracts/
 - [x] Successfully verified production build with npm run build (0 errors)
 
+### Phase 5 — Integration, Seed Data & Demo Script
+- [x] Built idempotent seed script in `contracts/scripts/seed.js` populating realistic defense identities, assets, transfers, role promotions, and deactivation.
+- [x] Seeded 6 identities with W3C DIDs: Deployer Admin (`0xf39F...2266`), SecOps Admin (`0x7099...79C8`), Radar Manager (`0x3C44...93BC`), Compliance Auditor (`0x90F7...b906`), Operator Alpha (`0x15d3...6A65`), and Field Technician Beta (`0x9965...A4dc`).
+- [x] Minted 4 ERC-721 defense assets with IPFS metadata hashes (Radar Calibration Matrix, Tactical SDR Firmware, Facility Access Credential, Master Key Derivation Bundle).
+- [x] Executed asset handover transfer (Token #2 transferred from Operator Alpha to Manager Dr. Nair).
+- [x] Promoted Operator Alpha to MANAGER tier via on-chain `updateRole`.
+- [x] Deactivated Field Technician Beta via `deactivateIdentity` and verified on-chain revert guard rejecting new asset minting.
+- [x] Verified backend indexer event extraction and backfill: 13 on-chain events indexed into MongoDB.
+- [x] Verified REST API responses (`GET /api/identity`, `GET /api/assets`, `GET /api/audit`, `GET /api/audit/:address`).
+- [x] Verified frontend Forensic Audit Trail UI (`/audit`) with live search and Cryptographic Payload Inspector modal.
+- [x] Authored `docs/DEMO_SCRIPT.md` with timed 4–5 minute walkthrough script and quick-reference appendix table for judges.
+
 ## Tech Stack (fixed — do not change)
 - Contracts: Solidity, Hardhat, OpenZeppelin
 - Backend: Node.js, Express, MongoDB via Mongoose
@@ -67,12 +79,8 @@ Phase 4 — Frontend (COMPLETE)
 - No Next.js, no Docker for prototype phase
 
 ## Next Phase To Execute
-Phase 5 — Integration & Seed Data
-Scope: Run all services together (Hardhat node, MongoDB, backend, frontend). Seed demo data:
-register 4-5 identities across all roles, mint several assets, perform a few transfers and
-role updates to populate a realistic audit trail for the demo. Write a DEMO_SCRIPT.md walking
-through the full identity -> mint -> transfer -> audit flow for judges. Do NOT modify contracts/
-or backend/ business logic in Phase 5 — only seed scripts and documentation.
+Phase 6 — Documentation & Pitch Materials
+Scope: Finalize README with setup instructions, polish architecture diagram, create pitch deck outline covering problem/solution/architecture/demo/impact for BEL, ensure docs/problem-statement.md and docs/phase-plan.md are accurate and complete. No code changes.
 
 ## Notes / Decisions Log
 - 2026-09-10: Phase 0 scaffolding initialized. Folder structure, configs, contract skeletons, backend stubs, frontend React/Vite shell, sample data, and documentation created.
@@ -89,5 +97,6 @@ or backend/ business logic in Phase 5 — only seed scripts and documentation.
   - Created and mounted comprehensive enterprise `Footer` across all pages matching the theme.
   - Simplified Chrome tab title in `index.html` to strictly `Verifind Plus`.
   - Refactored `Navbar.jsx`: removed left shield icon, removed "Enterprise identity" subtitle, and enlarged `Verifind Plus` typography.
+- 2026-09-11: Phase 5 complete. Implemented `contracts/scripts/seed.js` against localhost network: seeded 6 identities with DIDs, 4 defense assets (ERC-721), 1 department transfer, 1 role promotion, and 1 identity deactivation with security revert verification. Updated `backend/src/services/blockchainListener.js` event payload handling to support both EventLog and ContractEventPayload formats, enabling historical event indexing across all 15 blocks. Confirmed 13 on-chain events synced to MongoDB and queryable over `/api/identity`, `/api/assets`, and `/api/audit`. Captured live browser screenshots of `/audit` table and payload modal. Created `docs/DEMO_SCRIPT.md` with 4–5 minute judge presentation walkthrough and account reference table.
 
 

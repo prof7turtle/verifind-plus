@@ -30,7 +30,7 @@ import { truncateAddress } from "@/lib/utils";
 export function Navbar() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { account, isConnecting, isWrongNetwork, connect, disconnect, switchNetwork } = useWallet();
+  const { account, persona, isConnecting, isWrongNetwork, connect, disconnect, switchNetwork } = useWallet();
   const { role } = useRole();
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -171,34 +171,51 @@ export function Navbar() {
             </div>
           )}
 
-          {/* Role Badge */}
-          {account && role && (
-            <Badge
-              variant={
-                role === "ADMIN"
-                  ? "admin"
-                  : role === "MANAGER"
-                  ? "manager"
-                  : role === "AUDITOR"
-                  ? "auditor"
-                  : "user"
-              }
-            >
-              {role}
-            </Badge>
+          {/* User Persona & Role Badge */}
+          {account && (
+            <div className="flex items-center gap-1.5">
+              <span className="hidden lg:inline text-xs font-semibold text-neutral-900 bg-neutral-100 border border-neutral-200 px-2 py-1 rounded-md">
+                {persona?.shortName || persona?.name || truncateAddress(account)}
+              </span>
+              <Badge
+                variant={
+                  (role || persona?.role) === "ADMIN"
+                    ? "admin"
+                    : (role || persona?.role) === "MANAGER"
+                    ? "manager"
+                    : (role || persona?.role) === "AUDITOR"
+                    ? "auditor"
+                    : "user"
+                }
+              >
+                {role || persona?.role || "USER"}
+              </Badge>
+            </div>
           )}
 
-          {/* Connect / Disconnect */}
+          {/* Connect / Disconnect / Switch Role */}
           {account ? (
-            <div className="flex items-center gap-2">
-              <span className="hidden md:inline text-xs font-mono text-neutral-800 font-semibold">
+            <div className="flex items-center gap-1.5 sm:gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={connect}
+                className="gap-1 text-xs text-neutral-700 hover:text-neutral-950 border-neutral-200 bg-white hover:bg-neutral-50 h-8 px-2 sm:px-2.5"
+                title="Switch Role or Account"
+              >
+                <Users className="h-3.5 w-3.5 text-neutral-600" />
+                <span className="hidden sm:inline">Switch Role</span>
+              </Button>
+
+              <span className="hidden xl:inline text-xs font-mono text-neutral-500">
                 {truncateAddress(account)}
               </span>
+
               <Button
                 variant="outline"
                 size="sm"
                 onClick={disconnect}
-                className="gap-1 text-xs text-neutral-600 hover:text-neutral-900 border-neutral-200 h-8"
+                className="gap-1 text-xs text-neutral-600 hover:text-neutral-900 border-neutral-200 h-8 px-2 sm:px-2.5"
               >
                 <LogOut className="h-3.5 w-3.5" />
                 <span className="hidden md:inline">Disconnect</span>
@@ -209,10 +226,10 @@ export function Navbar() {
               onClick={connect}
               disabled={isConnecting}
               size="sm"
-              className="gap-1.5 bg-neutral-900 hover:bg-neutral-800 text-white h-8 text-xs shadow-sm"
+              className="gap-1.5 bg-neutral-900 hover:bg-neutral-800 text-white h-8 text-xs shadow-sm px-3"
             >
               <Wallet className="h-3.5 w-3.5" />
-              <span>{isConnecting ? "Connecting..." : "Connect"}</span>
+              <span>{isConnecting ? "Connecting..." : "Connect Wallet"}</span>
             </Button>
           )}
 
